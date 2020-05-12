@@ -73,6 +73,32 @@ router.post("/", (req, res) => {
     });
 });
 
+router.put("/:id", (req, res) => {
+  const changes = req.body;
+  const { id } = req.params;
+
+  posts
+    .update(id, changes)
+    .then(post => {
+      if (post === 0) {
+        res
+          .status(404)
+          .json({ message: "The post with the specified ID does not exist." });
+      } else if (!changes.title || !changes.contents) {
+        res.status(400).json({
+          errorMessage: "Please provide title and contents for the post."
+        });
+      } else {
+        res.status(200).json(post);
+      }
+    })
+    .catch(err => {
+      res
+        .status(500)
+        .json({ error: "The post information could not be modified." });
+    });
+});
+
 router.delete("/:id", (req, res) => {
   posts
     .remove(req.params.id)
