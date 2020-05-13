@@ -116,4 +116,38 @@ router.delete("/:id", (req, res) => {
     });
 });
 
+router.post("/:id/comments", (req, res) => {
+  const { id } = req.params;
+
+  posts
+    .findById(id)
+    .then(post => {
+      if (post.length === 0) {
+        res
+          .status(404)
+          .json({ message: "The post with the specified ID does not exist." });
+      }
+
+      req.body.post_id = id;
+
+      posts
+        .insertComment(req.body)
+        .then(comment => {
+          // console.log(req.body);
+          res.status(201).json(comment);
+        })
+        .catch(err => {
+          // console.log(req.body);
+          res.status(400).json({
+            errorMessage: "Please provide text for the comment."
+          });
+        });
+    })
+    .catch(err => {
+      res.status(500).json({
+        error: "There was an error while saving the comment to the database."
+      });
+    });
+});
+
 module.exports = router;
