@@ -55,22 +55,24 @@ router.get("/:id/comments", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  posts
-    .insert(req.body)
-    .then(newPost => {
-      if (!req.body.title || !req.body.contents) {
-        res.status(400).json({
-          errorMessage: "Please provide title and contents for the post."
-        });
-      } else {
-        res.status(201).json(newPost);
-      }
-    })
-    .catch(err => {
-      res.status(500).json({
-        error: "There was an error while saving the post to the database"
-      });
+  const { title, contents } = req.body;
+
+  if (!title || !contents) {
+    res.status(400).json({
+      errorMessage: "Please provide title and contents for the post."
     });
+  } else {
+    posts
+      .insert(req.body)
+      .then(newPost => {
+        res.status(201).json(newPost);
+      })
+      .catch(err => {
+        res.status(500).json({
+          error: "There was an error while saving the post to the database"
+        });
+      });
+  }
 });
 
 router.put("/:id", (req, res) => {
